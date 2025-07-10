@@ -1,10 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 
 export default function HairWashReminder() {
   const [washDay, setWashDay] = useState<Date | null>(null);
   const [result, setResult] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedWashDay = localStorage.getItem("lastWashDay");
+    if (savedWashDay) {
+      setWashDay(new Date(savedWashDay));
+    }
+  }, []);
 
   const checkWashDay = () => {
     if (!washDay) {
@@ -39,7 +46,12 @@ export default function HairWashReminder() {
             id="washDay"
             type="date"
             className="w-full p-2 border border-gray-300 rounded"
-            onChange={(e) => setWashDay(new Date(e.target.value))}
+            onChange={(e) => {
+              const selectedDate = new Date(e.target.value);
+              setWashDay(selectedDate);
+              localStorage.setItem("lastWashDay", selectedDate.toISOString());
+            }}
+            value={washDay ? format(washDay, "yyyy-MM-dd") : ""}
           />
         </div>
 
